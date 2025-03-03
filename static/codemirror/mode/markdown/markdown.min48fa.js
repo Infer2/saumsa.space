@@ -1,27 +1,316 @@
-(function(k){"object"==typeof exports&&"object"==typeof module?k(require("../../lib/codemirror"),require("../xml/xml"),require("../meta")):"function"==typeof define&&define.amd?define(["../../lib/codemirror","../xml/xml","../meta"],k):k(CodeMirror)})(function(k){k.defineMode("markdown",function(A,d){function y(b,a,c){a.f=a.inline=c;return c(b,a)}function B(b){b.linkTitle=!1;b.linkHref=!1;b.linkText=!1;b.em=!1;b.strong=!1;b.strikethrough=!1;b.mark=!1;1<=b.code&&(b.code=0);b.quote=0;b.indentedCode=
-!1;b.f==v&&(b.f=n,b.block=w);b.trailingSpace=0;b.trailingSpaceNewLine=!1;b.prevLine=b.thisLine;b.thisLine={stream:null};return null}function w(b,a){var c=b.column()===a.indentation,e=a.prevLine.stream;var m=!e||!/\S/.test(e.string);var p=a.indentedCode,h=a.prevLine.hr,u=a.prevLine.header,q=!1!==a.list,l=(a.listStack[a.listStack.length-1]||0)+3,G=!m&&!h&&!u;a.indentedCode=!1;e=a.indentation;if(null===a.indentationDiff&&(a.indentationDiff=a.indentation,q)){a.em=!1;a.strong=!1;a.code=!1;a.strikethrough=
-!1;a.mark=!1;for(a.list=null;e<a.listStack[a.listStack.length-1];)a.listStack.pop(),a.listStack.length?a.indentation=a.listStack[a.listStack.length-1]:a.list=!1;!1!==a.list&&(a.indentationDiff=e-a.listStack[a.listStack.length-1])}var H=!m&&!h&&!a.prevLine.header&&(!q||!p)&&!a.prevLine.fencedCodeEnd,z=(!1===a.list||h||m)&&a.indentation<=l&&b.match(I);h=null;if(4<=a.indentationDiff&&(p||a.prevLine.fencedCodeEnd||a.prevLine.header||m))return b.skipToEnd(),a.indentedCode=!0,g.code;if(b.eatSpace())return null;
-if(c&&a.indentation<=l&&(h=b.match(J))&&6>=h[1].length)return a.quote=0,a.header=h[1].length,a.thisLine.header=!0,d.highlightFormatting&&(a.formatting="header"),a.f=a.inline,f(a);if(a.indentation<=l&&b.eat(">"))return 1<=a.code&&(a.code=0),a.quote=c?1:a.quote+1,d.highlightFormatting&&(a.formatting="quote"),b.eatSpace(),f(a);if(!z&&!a.setext&&c&&(m||q||u||G)&&a.indentation<=l&&(h=b.match(K)))return c=h[1]?"ol":"ul",a.indentation=e+b.current().length,a.list=!0,a.quote=0,a.listStack.push(a.indentation),
-d.taskLists&&b.match(C,!1)&&(a.taskList=!0),a.f=a.inline,d.highlightFormatting&&(a.formatting=["list","list-"+c]),f(a);if(c&&a.indentation<=l&&(h=b.match(L,!0))){a.quote=0;a.fencedEndRE=new RegExp(h[1]+"+ *$");if(c=d.fencedCodeBlockHighlighting)c=h[2],k.findModeByName&&(e=k.findModeByName(c))&&(c=e.mime||e.mimes[0]),c=k.getMode(A,c),c="null"==c.name?null:c;a.localMode=c;a.localMode&&(a.localState=k.startState(a.localMode));a.f=a.block=M;d.highlightFormatting&&(a.formatting="code-block");a.code=-1;
-return f(a)}if(a.setext||!(H&&q||a.quote||!1!==a.list||a.code||a.mark||z||N.test(b.string))&&(h=b.lookAhead(1))&&(h=h.match(O)))return a.setext?(a.header=a.setext,a.setext=0,b.skipToEnd(),d.highlightFormatting&&(a.formatting="header")):(a.header="="==h[0].charAt(0)?1:2,a.setext=a.header),a.thisLine.header=!0,a.f=a.inline,f(a);if(z)return b.skipToEnd(),a.hr=!0,a.thisLine.hr=!0,g.hr;if(a.indentation<=l&&b.match(P))a.formatting="admonition";else if("["===b.peek())if(b.match(Q))a.formatting="toc";else return y(b,
-a,R);else a.indentation<=l&&!b.eat(">")&&c&&0!==a.quote&&!b.string.startsWith(">")&&(a.quote=0,a.formatting=!1);return y(b,a,a.inline)}function v(b,a){var c=r.token(b,a.htmlState);if(!S){var e=k.innerMode(r,a.htmlState);if("xml"==e.mode.name&&null===e.state.tagStart&&!e.state.context&&e.state.tokenize.isInText||a.md_inside&&-1<b.current().indexOf(">"))a.f=n,a.block=w,a.htmlState=null}return c}function M(b,a){var c=a.listStack[a.listStack.length-1]||0,e=a.indentation<c;if(a.fencedEndRE&&a.indentation<=
-c+3&&(e||b.match(a.fencedEndRE))){d.highlightFormatting&&(a.formatting="code-block");var m;e||(m=f(a));a.localMode=a.localState=null;a.block=w;a.f=n;a.fencedEndRE=null;a.code=0;a.thisLine.fencedCodeEnd=!0;return e?(c=a.block,a.f=a.block=c,c(b,a)):m}if(a.localMode)return a.localMode.token(b,a.localState);b.skipToEnd();return g.code}function f(b){var a=[];if(b.formatting){a.push(g.formatting);"string"===typeof b.formatting&&(b.formatting=[b.formatting]);for(var c=0;c<b.formatting.length;c++)a.push(g.formatting+
-"-"+b.formatting[c]),"header"===b.formatting[c]&&a.push(g.formatting+"-"+b.formatting[c]+"-"+b.header),"quote"===b.formatting[c]&&(!d.maxBlockquoteDepth||d.maxBlockquoteDepth>=b.quote?a.push(g.formatting+"-"+b.formatting[c]+"-"+b.quote):a.push("error"))}if(b.taskOpen)return a.push("meta"),a.length?a.join(" "):null;if(b.taskClosed)return a.push("property"),a.length?a.join(" "):null;b.linkHref?a.push(g.linkHref,"url"):(b.strong&&a.push(g.strong),b.em&&a.push(g.em),b.strikethrough&&a.push(g.strikethrough),
-b.mark&&a.push(g.mark),b.emoji&&a.push(g.emoji),b.linkText&&a.push(g.linkText),b.code&&a.push(g.code),b.image&&a.push(g.image),b.imageAltText&&a.push(g.imageAltText,"link"),b.imageMarker&&a.push(g.imageMarker));b.header&&a.push(g.header,g.header+"-"+b.header);b.quote&&(a.push(g.quote),!d.maxBlockquoteDepth||d.maxBlockquoteDepth>=b.quote?a.push(g.quote+"-"+b.quote):a.push(g.quote+"-"+d.maxBlockquoteDepth));!1!==b.list&&((b.listStack.length-1)%2?a.push(g.list2):a.push(g.list1));b.trailingSpaceNewLine?
-a.push("trailing-space-new-line"):b.trailingSpace&&a.push("trailing-space-"+(b.trailingSpace%2?"a":"b"));return a.length?a.join(" "):null}function T(b,a){if(b.match(U,!0))return f(a)}function n(b,a){var c=a.text(b,a);if("undefined"!==typeof c)return c;if(a.list)return a.list=null,f(a);if(a.taskList)return" "===b.match(C,!0)[1]?a.taskOpen=!0:a.taskClosed=!0,d.highlightFormatting&&(a.formatting="task"),a.taskList=!1,f(a);a.taskOpen=!1;a.taskClosed=!1;if(a.header&&b.match(/^#+$/,!0))return d.highlightFormatting&&
-(a.formatting="header"),f(a);c=b.next();if(a.linkTitle){a.linkTitle=!1;var e=c;"("===c&&(e=")");e=(e+"").replace(/([.?*+^\[\]\\(){}|-])/g,"\\$1");if(b.match(new RegExp("^\\s*(?:[^"+e+"\\\\]+|\\\\\\\\|\\\\.)"+e),!0))return g.linkHref}if("`"===c){c=a.formatting;d.highlightFormatting&&(a.formatting="code");b.eatWhile("`");e=b.current().length;if(0!=a.code||a.quote&&1!=e){if(e==a.code)return c=f(a),a.code=0,c;a.formatting=c;return f(a)}a.code=e;return f(a)}if(a.code)return f(a);if("\\"===c&&(b.next(),
-d.highlightFormatting))return c=f(a),e=g.formatting+"-escape",c?c+" "+e:e;if("!"===c&&b.match(/\[[^\]]*\] ?(?:\(|\[)/,!1))return a.imageMarker=!0,a.image=!0,d.highlightFormatting&&(a.formatting="image"),f(a);if("["===c&&a.imageMarker&&b.match(/[^\]]*\](\(.*?\)| ?\[.*?\])/,!1))return a.imageMarker=!1,a.imageAltText=!0,d.highlightFormatting&&(a.formatting="image"),f(a);if("]"===c&&a.imageAltText)return d.highlightFormatting&&(a.formatting="image"),c=f(a),a.imageAltText=!1,a.image=!1,a.inline=a.f=D,
-c;if("["===c&&!a.image){if(a.linkText&&b.match(/^.*?\]/))return f(a);a.linkText=!0;d.highlightFormatting&&(a.formatting="link");return f(a)}if("]"===c&&a.linkText)return d.highlightFormatting&&(a.formatting="link"),c=f(a),a.linkText=!1,a.inline=a.f=b.match(/\(.*?\)| ?\[.*?\]/,!1)?D:n,c;if("<"===c&&b.match(/^(https?|ftps?):\/\/(?:[^\\>]|\\.)+>/,!1))return a.f=a.inline=E,d.highlightFormatting&&(a.formatting="link"),c=f(a),(c?c+" ":"")+g.linkInline;if("<"===c&&b.match(/^[^> \\]+@(?:[^\\>]|\\.)+>/,!1))return a.f=
-a.inline=E,d.highlightFormatting&&(a.formatting="link"),c=f(a),(c?c+" ":"")+g.linkEmail;if(d.xml&&"<"===c&&b.match(/^(!--|[a-z]+(?:\s+[a-z_:.\-]+(?:\s*=\s*[^>]+)?)*\s*>)/i,!1))return c=b.string.indexOf(">",b.pos),-1!=c&&(c=b.string.substring(b.start,c),/markdown\s*=\s*('|"){0,1}1('|"){0,1}/.test(c)&&(a.md_inside=!0)),b.backUp(1),a.htmlState=k.startState(r),c=v,a.f=a.block=c,c(b,a);if(d.xml&&"<"===c&&b.match(/^\/\w*?>/))return a.md_inside=!1,"tag";if("*"===c||"_"===c){for(var m=1,p=1==b.pos?" ":b.string.charAt(b.pos-
-2);3>m&&b.eat(c);)m++;var h=b.peek()||" ",u=!/\s/.test(h)&&(!t.test(h)||/\s/.test(p)||t.test(p)),q=!/\s/.test(p)&&(!t.test(p)||/\s/.test(h)||t.test(h)),l=e=null;m%2&&(a.em||!u||"*"!==c&&q&&!t.test(p)?a.em!=c||!q||"*"!==c&&u&&!t.test(h)||(e=!1):e=!0);1<m&&(a.strong||!u||"*"!==c&&q&&!t.test(p)?a.strong!=c||!q||"*"!==c&&u&&!t.test(h)||(l=!1):l=!0);if(null!=l||null!=e)return d.highlightFormatting&&(a.formatting=null==e?"strong":null==l?"em":"strong em"),!0===e&&(a.em=c),!0===l&&(a.strong=c),c=f(a),!1===
-e&&(a.em=!1),!1===l&&(a.strong=!1),c}else if(" "===c&&(b.eat("*")||b.eat("_"))){if(" "===b.peek())return f(a);b.backUp(1)}if(d.strikethrough)if("~"===c&&b.eatWhile(c)){if(a.strikethrough)return d.highlightFormatting&&(a.formatting="strikethrough"),c=f(a),a.strikethrough=!1,c;if(b.match(/^[^\s]/,!1))return a.strikethrough=!0,d.highlightFormatting&&(a.formatting="strikethrough"),f(a)}else if(" "===c&&b.match(/^~~/,!0)){if(" "===b.peek())return f(a);b.backUp(2)}if(d.mark)if("="===c&&b.eatWhile(c)){if(a.mark)return d.highlightFormatting&&
-(a.formatting="mark"),c=f(a),a.mark=!1,c;if(b.match(/^[^\s]/,!1))return a.mark=!0,d.highlightFormatting&&(a.formatting="mark"),f(a)}else if(" "===c&&b.match(/^==/,!0)){if(" "===b.peek())return f(a);b.backUp(2)}if(d.emoji&&":"===c&&b.match(/^[a-z_\d+-]+:/))return a.emoji=!0,d.highlightFormatting&&(a.formatting="emoji"),c=f(a),a.emoji=!1,c;" "===c&&(b.match(/^ +$/,!1)?a.trailingSpace++:a.trailingSpace&&(a.trailingSpaceNewLine=!0));return f(a)}function E(b,a){if(">"===b.next()){a.f=a.inline=n;d.highlightFormatting&&
-(a.formatting="link");var c=f(a);return(c?c+" ":"")+g.linkInline}b.match(/^[^>]+/,!0);return g.linkInline}function D(b,a){if(b.eatSpace())return null;var c=b.next();return"("===c||"["===c?(a.f=a.inline=V("("===c?")":"]"),d.highlightFormatting&&(a.formatting="link-string"),a.linkHref=!0,f(a)):"error"}function V(b){return function(a,c){if(a.next()===b){c.f=c.inline=n;d.highlightFormatting&&(c.formatting="link-string");var e=f(c);c.linkHref=!1;return e}a.match(W[b]);c.linkHref=!0;return f(c)}}function R(b,
-a){return b.match(/^([^\]\\]|\\.)*\]:/,!1)?(a.f=X,b.next(),d.highlightFormatting&&(a.formatting="link"),a.linkText=!0,f(a)):y(b,a,n)}function X(b,a){if(b.match(/^\]:/,!0)){a.f=a.inline=Y;d.highlightFormatting&&(a.formatting="link");var c=f(a);a.linkText=!1;return c}b.match(/^([^\]\\]|\\.)+/,!0);return g.linkText}function Y(b,a){if(b.eatSpace())return null;b.match(/^[^\s]+/,!0);void 0===b.peek()?a.linkTitle=!0:b.match(/^(?:\s+(?:"(?:[^"\\]|\\\\|\\.)+"|'(?:[^'\\]|\\\\|\\.)+'|\((?:[^)\\]|\\\\|\\.)+\)))?/,
-!0);a.f=a.inline=n;return g.linkHref+" url"}var r=k.getMode(A,"text/html"),S="null"==r.name;void 0===d.highlightFormatting&&(d.highlightFormatting=!1);void 0===d.maxBlockquoteDepth&&(d.maxBlockquoteDepth=0);void 0===d.taskLists&&(d.taskLists=!1);void 0===d.strikethrough&&(d.strikethrough=!1);void 0===d.mark&&(d.mark=!1);void 0===d.emoji&&(d.emoji=!1);void 0===d.fencedCodeBlockHighlighting&&(d.fencedCodeBlockHighlighting=!0);void 0===d.xml&&(d.xml=!0);void 0===d.tokenTypeOverrides&&(d.tokenTypeOverrides=
-{});var g={header:"header",code:"comment",quote:"quote",list1:"variable-2",list2:"keyword",list3:"keyword",hr:"hr",image:"image",imageAltText:"image-alt-text",imageMarker:"image-marker",formatting:"formatting",linkInline:"link",linkEmail:"link",linkText:"link",linkHref:"string",em:"em",strong:"strong",strikethrough:"strikethrough",mark:"mark",emoji:"builtin"},x;for(x in g)g.hasOwnProperty(x)&&d.tokenTypeOverrides[x]&&(g[x]=d.tokenTypeOverrides[x]);var I=/^([*\-_])(?:\s*\1){2,}\s*$/,K=/^(?:[*\-+]|^[0-9]+([.)]))\s+/,
-C=/^\[(x| )\](?=\s)/i,J=d.allowAtxHeaderWithoutSpace?/^(#+)/:/^(#+)(?: |$)/,O=/^ *(?:={1,}|-{1,})\s*$/,U=/^[^#!\[\]*_\\<=>` "'(~:]+/,L=/^(~~~+|```+)[ \t]*([\w+#-]*)[^\n`]*$/,N=/^\s*\[[^\]]+?\]:.*$/,t=/[!"#$%&'()*+,\-\.\/:;<=>?@\[\\\]^_`{|}~\u2014]/,Q=/^\[TOC[1-6]?\]\s*$/,P=/^!!!/,W={")":/^(?:[^\\\(\)]|\\.|\((?:[^\\\(\)]|\\.)*\))*?(?=\))/,"]":/^(?:[^\\\[\]]|\\.|\[(?:[^\\\[\]]|\\.)*\])*?(?=\])/},F={startState:function(){return{f:w,prevLine:{stream:null},thisLine:{stream:null},block:w,htmlState:null,
-indentation:0,inline:n,text:T,formatting:!1,linkText:!1,linkHref:!1,linkTitle:!1,code:0,em:!1,strong:!1,header:0,setext:0,hr:!1,taskList:!1,list:!1,listStack:[],quote:0,trailingSpace:0,trailingSpaceNewLine:!1,strikethrough:!1,mark:!1,emoji:!1,fencedEndRE:null}},copyState:function(b){return{f:b.f,prevLine:b.prevLine,thisLine:b.thisLine,block:b.block,htmlState:b.htmlState&&k.copyState(r,b.htmlState),indentation:b.indentation,localMode:b.localMode,localState:b.localMode?k.copyState(b.localMode,b.localState):
-null,inline:b.inline,text:b.text,formatting:!1,linkText:b.linkText,linkTitle:b.linkTitle,linkHref:b.linkHref,code:b.code,em:b.em,strong:b.strong,strikethrough:b.strikethrough,mark:b.mark,emoji:b.emoji,header:b.header,setext:b.setext,hr:b.hr,taskList:b.taskList,list:b.list,listStack:b.listStack.slice(0),quote:b.quote,indentedCode:b.indentedCode,trailingSpace:b.trailingSpace,trailingSpaceNewLine:b.trailingSpaceNewLine,md_inside:b.md_inside,fencedEndRE:b.fencedEndRE}},token:function(b,a){a.formatting=
-!1;if(b!=a.thisLine.stream){a.header=0;a.hr=!1;if(b.match(/^\s*$/,!0))return B(a),null;a.prevLine=a.thisLine;a.thisLine={stream:b};a.taskList=!1;a.trailingSpace=0;a.trailingSpaceNewLine=!1;if(!a.localState&&(a.f=a.block,a.f!=v)){var c=b.match(/^\s*/,!0)[0].replace(/\t/g,"    ").length;a.indentation=c;a.indentationDiff=null;if(0<c)return null}}return a.f(b,a)},innerMode:function(b){return b.block==v?{state:b.htmlState,mode:r}:b.localState?{state:b.localState,mode:b.localMode}:{state:b,mode:F}},indent:function(b,
-a,c){return b.block==v&&r.indent?r.indent(b.htmlState,a,c):b.localState&&b.localMode.indent?b.localMode.indent(b.localState,a,c):k.Pass},blankLine:B,getType:f,closeBrackets:"()[]{}''\"\"``",fold:"markdown"};return F},"xml");k.defineMIME("text/markdown","markdown");k.defineMIME("text/x-markdown","markdown")});
+! function(t) {
+	"object" == typeof exports && "object" == typeof module ? t(require("../../lib/codemirror"), require("../xml/xml"), require("../meta")) : "function" == typeof define && define.amd ? define(["../../lib/codemirror", "../xml/xml", "../meta"], t) : t(CodeMirror)
+}((function(t) {
+	t.defineMode("markdown", (function(e, i) {
+		function n(t, e, i) {
+			return e.f = e.inline = i, i(t, e)
+		}
+
+		function r(t) {
+			return t.linkTitle = !1, t.linkHref = !1, t.linkText = !1, t.em = !1, t.strong = !1, t.strikethrough = !1, t.mark = !1, 1 <= t.code && (t.code = 0), t.quote = 0, t.indentedCode = !1, t.f == o && (t.f = m, t.block = a), t.trailingSpace = 0, t.trailingSpaceNewLine = !1, t.prevLine = t.thisLine, t.thisLine = {
+				stream: null
+			}, null
+		}
+
+		function a(r, a) {
+			var o = r.column() === a.indentation,
+				g = a.prevLine.stream,
+				m = !g || !/\S/.test(g.string),
+				s = a.indentedCode,
+				f = a.prevLine.hr,
+				d = a.prevLine.header,
+				u = !1 !== a.list,
+				k = (a.listStack[a.listStack.length - 1] || 0) + 3,
+				p = !m && !f && !d;
+			if (a.indentedCode = !1, g = a.indentation, null === a.indentationDiff && (a.indentationDiff = a.indentation, u)) {
+				for (a.em = !1, a.strong = !1, a.code = !1, a.strikethrough = !1, a.mark = !1, a.list = null; g < a.listStack[a.listStack.length - 1];) a.listStack.pop(), a.listStack.length ? a.indentation = a.listStack[a.listStack.length - 1] : a.list = !1;
+				!1 !== a.list && (a.indentationDiff = g - a.listStack[a.listStack.length - 1])
+			}
+			var x = !(m || f || a.prevLine.header || u && s || a.prevLine.fencedCodeEnd),
+				F = (!1 === a.list || f || m) && a.indentation <= k && r.match(v);
+			if (f = null, 4 <= a.indentationDiff && (s || a.prevLine.fencedCodeEnd || a.prevLine.header || m)) return r.skipToEnd(), a.indentedCode = !0, S.code;
+			if (r.eatSpace()) return null;
+			if (o && a.indentation <= k && (f = r.match(q)) && 6 >= f[1].length) return a.quote = 0, a.header = f[1].length, a.thisLine.header = !0, i.highlightFormatting && (a.formatting = "header"), a.f = a.inline, h(a);
+			if (a.indentation <= k && r.eat(">")) return 1 <= a.code && (a.code = 0), a.quote = o ? 1 : a.quote + 1, i.highlightFormatting && (a.formatting = "quote"), r.eatSpace(), h(a);
+			if (!F && !a.setext && o && (m || u || d || p) && a.indentation <= k && (f = r.match(L))) return o = f[1] ? "ol" : "ul", a.indentation = g + r.current().length, a.list = !0, a.quote = 0, a.listStack.push(a.indentation), i.taskLists && r.match(T, !1) && (a.taskList = !0), a.f = a.inline, i.highlightFormatting && (a.formatting = ["list", "list-" + o]), h(a);
+			if (o && a.indentation <= k && (f = r.match(b, !0))) return a.quote = 0, a.fencedEndRE = new RegExp(f[1] + "+ *$"), (o = i.fencedCodeBlockHighlighting) && (o = f[2], t.findModeByName && (g = t.findModeByName(o)) && (o = g.mime || g.mimes[0]), o = "null" == (o = t.getMode(e, o)).name ? null : o), a.localMode = o, a.localMode && (a.localState = t.startState(a.localMode)), a.f = a.block = l, i.highlightFormatting && (a.formatting = "code-block"), a.code = -1, h(a);
+			if (a.setext || !(x && u || a.quote || !1 !== a.list || a.code || a.mark || F || E.test(r.string)) && (f = r.lookAhead(1)) && (f = f.match(M))) return a.setext ? (a.header = a.setext, a.setext = 0, r.skipToEnd(), i.highlightFormatting && (a.formatting = "header")) : (a.header = "=" == f[0].charAt(0) ? 1 : 2, a.setext = a.header), a.thisLine.header = !0, a.f = a.inline, h(a);
+			if (F) return r.skipToEnd(), a.hr = !0, a.thisLine.hr = !0, S.hr;
+			if (a.indentation <= k && r.match(j)) a.formatting = "admonition";
+			else if ("[" === r.peek()) {
+				if (!r.match(y)) return n(r, a, c);
+				a.formatting = "toc"
+			} else a.indentation <= k && !r.eat(">") && o && 0 !== a.quote && !r.string.startsWith(">") && (a.quote = 0, a.formatting = !1);
+			return n(r, a, a.inline)
+		}
+
+		function o(e, i) {
+			var n = k.token(e, i.htmlState);
+			if (!p) {
+				var r = t.innerMode(k, i.htmlState);
+				("xml" == r.mode.name && null === r.state.tagStart && !r.state.context && r.state.tokenize.isInText || i.md_inside && -1 < e.current().indexOf(">")) && (i.f = m, i.block = a, i.htmlState = null)
+			}
+			return n
+		}
+
+		function l(t, e) {
+			var n, r = e.listStack[e.listStack.length - 1] || 0,
+				o = e.indentation < r;
+			return e.fencedEndRE && e.indentation <= r + 3 && (o || t.match(e.fencedEndRE)) ? (i.highlightFormatting && (e.formatting = "code-block"), o || (n = h(e)), e.localMode = e.localState = null, e.block = a, e.f = m, e.fencedEndRE = null, e.code = 0, e.thisLine.fencedCodeEnd = !0, o ? (r = e.block, e.f = e.block = r, r(t, e)) : n) : e.localMode ? e.localMode.token(t, e.localState) : (t.skipToEnd(), S.code)
+		}
+
+		function h(t) {
+			var e = [];
+			if (t.formatting) {
+				e.push(S.formatting), "string" == typeof t.formatting && (t.formatting = [t.formatting]);
+				for (var n = 0; n < t.formatting.length; n++) e.push(S.formatting + "-" + t.formatting[n]), "header" === t.formatting[n] && e.push(S.formatting + "-" + t.formatting[n] + "-" + t.header), "quote" === t.formatting[n] && (!i.maxBlockquoteDepth || i.maxBlockquoteDepth >= t.quote ? e.push(S.formatting + "-" + t.formatting[n] + "-" + t.quote) : e.push("error"))
+			}
+			return t.taskOpen ? (e.push("meta"), e.length ? e.join(" ") : null) : t.taskClosed ? (e.push("property"), e.length ? e.join(" ") : null) : (t.linkHref ? e.push(S.linkHref, "url") : (t.strong && e.push(S.strong), t.em && e.push(S.em), t.strikethrough && e.push(S.strikethrough), t.mark && e.push(S.mark), t.emoji && e.push(S.emoji), t.linkText && e.push(S.linkText), t.code && e.push(S.code), t.image && e.push(S.image), t.imageAltText && e.push(S.imageAltText, "link"), t.imageMarker && e.push(S.imageMarker)), t.header && e.push(S.header, S.header + "-" + t.header), t.quote && (e.push(S.quote), !i.maxBlockquoteDepth || i.maxBlockquoteDepth >= t.quote ? e.push(S.quote + "-" + t.quote) : e.push(S.quote + "-" + i.maxBlockquoteDepth)), !1 !== t.list && ((t.listStack.length - 1) % 2 ? e.push(S.list2) : e.push(S.list1)), t.trailingSpaceNewLine ? e.push("trailing-space-new-line") : t.trailingSpace && e.push("trailing-space-" + (t.trailingSpace % 2 ? "a" : "b")), e.length ? e.join(" ") : null)
+		}
+
+		function g(t, e) {
+			if (t.match(F, !0)) return h(e)
+		}
+
+		function m(e, n) {
+			var r = n.text(e, n);
+			if (void 0 !== r) return r;
+			if (n.list) return n.list = null, h(n);
+			if (n.taskList) return " " === e.match(T, !0)[1] ? n.taskOpen = !0 : n.taskClosed = !0, i.highlightFormatting && (n.formatting = "task"), n.taskList = !1, h(n);
+			if (n.taskOpen = !1, n.taskClosed = !1, n.header && e.match(/^#+$/, !0)) return i.highlightFormatting && (n.formatting = "header"), h(n);
+			if (r = e.next(), n.linkTitle) {
+				n.linkTitle = !1;
+				var a = r;
+				if ("(" === r && (a = ")"), a = (a + "").replace(/([.?*+^\[\]\\(){}|-])/g, "\\$1"), e.match(new RegExp("^\\s*(?:[^" + a + "\\\\]+|\\\\\\\\|\\\\.)" + a), !0)) return S.linkHref
+			}
+			if ("`" === r) return r = n.formatting, i.highlightFormatting && (n.formatting = "code"), e.eatWhile("`"), a = e.current().length, 0 != n.code || n.quote && 1 != a ? a == n.code ? (r = h(n), n.code = 0, r) : (n.formatting = r, h(n)) : (n.code = a, h(n));
+			if (n.code) return h(n);
+			if ("\\" === r && (e.next(), i.highlightFormatting)) return r = h(n), a = S.formatting + "-escape", r ? r + " " + a : a;
+			if ("!" === r && e.match(/\[[^\]]*\] ?(?:\(|\[)/, !1)) return n.imageMarker = !0, n.image = !0, i.highlightFormatting && (n.formatting = "image"), h(n);
+			if ("[" === r && n.imageMarker && e.match(/[^\]]*\](\(.*?\)| ?\[.*?\])/, !1)) return n.imageMarker = !1, n.imageAltText = !0, i.highlightFormatting && (n.formatting = "image"), h(n);
+			if ("]" === r && n.imageAltText) return i.highlightFormatting && (n.formatting = "image"), r = h(n), n.imageAltText = !1, n.image = !1, n.inline = n.f = f, r;
+			if ("[" === r && !n.image) return n.linkText && e.match(/^.*?\]/) || (n.linkText = !0, i.highlightFormatting && (n.formatting = "link")), h(n);
+			if ("]" === r && n.linkText) return i.highlightFormatting && (n.formatting = "link"), r = h(n), n.linkText = !1, n.inline = n.f = e.match(/\(.*?\)| ?\[.*?\]/, !1) ? f : m, r;
+			if ("<" === r && e.match(/^(https?|ftps?):\/\/(?:[^\\>]|\\.)+>/, !1)) return n.f = n.inline = s, i.highlightFormatting && (n.formatting = "link"), ((r = h(n)) ? r + " " : "") + S.linkInline;
+			if ("<" === r && e.match(/^[^> \\]+@(?:[^\\>]|\\.)+>/, !1)) return n.f = n.inline = s, i.highlightFormatting && (n.formatting = "link"), ((r = h(n)) ? r + " " : "") + S.linkEmail;
+			if (i.xml && "<" === r && e.match(/^(!--|[a-z]+(?:\s+[a-z_:.\-]+(?:\s*=\s*[^>]+)?)*\s*>)/i, !1)) return -1 != (r = e.string.indexOf(">", e.pos)) && (r = e.string.substring(e.start, r), /markdown\s*=\s*('|"){0,1}1('|"){0,1}/.test(r) && (n.md_inside = !0)), e.backUp(1), n.htmlState = t.startState(k), r = o, n.f = n.block = r, r(e, n);
+			if (i.xml && "<" === r && e.match(/^\/\w*?>/)) return n.md_inside = !1, "tag";
+			if ("*" === r || "_" === r) {
+				for (var l = 1, g = 1 == e.pos ? " " : e.string.charAt(e.pos - 2); 3 > l && e.eat(r);) l++;
+				var c = e.peek() || " ",
+					d = !/\s/.test(c) && (!w.test(c) || /\s/.test(g) || w.test(g)),
+					u = !/\s/.test(g) && (!w.test(g) || /\s/.test(c) || w.test(c)),
+					p = a = null;
+				if (l % 2 && (n.em || !d || "*" !== r && u && !w.test(g) ? n.em != r || !u || "*" !== r && d && !w.test(c) || (a = !1) : a = !0), 1 < l && (n.strong || !d || "*" !== r && u && !w.test(g) ? n.strong != r || !u || "*" !== r && d && !w.test(c) || (p = !1) : p = !0), null != p || null != a) return i.highlightFormatting && (n.formatting = null == a ? "strong" : null == p ? "em" : "strong em"), !0 === a && (n.em = r), !0 === p && (n.strong = r), r = h(n), !1 === a && (n.em = !1), !1 === p && (n.strong = !1), r
+			} else if (" " === r && (e.eat("*") || e.eat("_"))) {
+				if (" " === e.peek()) return h(n);
+				e.backUp(1)
+			}
+			if (i.strikethrough)
+				if ("~" === r && e.eatWhile(r)) {
+					if (n.strikethrough) return i.highlightFormatting && (n.formatting = "strikethrough"), r = h(n), n.strikethrough = !1, r;
+					if (e.match(/^[^\s]/, !1)) return n.strikethrough = !0, i.highlightFormatting && (n.formatting = "strikethrough"), h(n)
+				} else if (" " === r && e.match(/^~~/, !0)) {
+				if (" " === e.peek()) return h(n);
+				e.backUp(2)
+			}
+			if (i.mark)
+				if ("=" === r && e.eatWhile(r)) {
+					if (n.mark) return i.highlightFormatting && (n.formatting = "mark"), r = h(n), n.mark = !1, r;
+					if (e.match(/^[^\s]/, !1)) return n.mark = !0, i.highlightFormatting && (n.formatting = "mark"), h(n)
+				} else if (" " === r && e.match(/^==/, !0)) {
+				if (" " === e.peek()) return h(n);
+				e.backUp(2)
+			}
+			return i.emoji && ":" === r && e.match(/^[a-z_\d+-]+:/) ? (n.emoji = !0, i.highlightFormatting && (n.formatting = "emoji"), r = h(n), n.emoji = !1, r) : (" " === r && (e.match(/^ +$/, !1) ? n.trailingSpace++ : n.trailingSpace && (n.trailingSpaceNewLine = !0)), h(n))
+		}
+
+		function s(t, e) {
+			if (">" === t.next()) {
+				e.f = e.inline = m, i.highlightFormatting && (e.formatting = "link");
+				var n = h(e);
+				return (n ? n + " " : "") + S.linkInline
+			}
+			return t.match(/^[^>]+/, !0), S.linkInline
+		}
+
+		function f(t, e) {
+			if (t.eatSpace()) return null;
+			var n = t.next();
+			return "(" === n || "[" === n ? (e.f = e.inline = function(t) {
+				return function(e, n) {
+					if (e.next() === t) {
+						n.f = n.inline = m, i.highlightFormatting && (n.formatting = "link-string");
+						var r = h(n);
+						return n.linkHref = !1, r
+					}
+					return e.match(C[t]), n.linkHref = !0, h(n)
+				}
+			}("(" === n ? ")" : "]"), i.highlightFormatting && (e.formatting = "link-string"), e.linkHref = !0, h(e)) : "error"
+		}
+
+		function c(t, e) {
+			return t.match(/^([^\]\\]|\\.)*\]:/, !1) ? (e.f = d, t.next(), i.highlightFormatting && (e.formatting = "link"), e.linkText = !0, h(e)) : n(t, e, m)
+		}
+
+		function d(t, e) {
+			if (t.match(/^\]:/, !0)) {
+				e.f = e.inline = u, i.highlightFormatting && (e.formatting = "link");
+				var n = h(e);
+				return e.linkText = !1, n
+			}
+			return t.match(/^([^\]\\]|\\.)+/, !0), S.linkText
+		}
+
+		function u(t, e) {
+			return t.eatSpace() ? null : (t.match(/^[^\s]+/, !0), void 0 === t.peek() ? e.linkTitle = !0 : t.match(/^(?:\s+(?:"(?:[^"\\]|\\\\|\\.)+"|'(?:[^'\\]|\\\\|\\.)+'|\((?:[^)\\]|\\\\|\\.)+\)))?/, !0), e.f = e.inline = m, S.linkHref + " url")
+		}
+		var k = t.getMode(e, "text/html"),
+			p = "null" == k.name;
+		void 0 === i.highlightFormatting && (i.highlightFormatting = !1), void 0 === i.maxBlockquoteDepth && (i.maxBlockquoteDepth = 0), void 0 === i.taskLists && (i.taskLists = !1), void 0 === i.strikethrough && (i.strikethrough = !1), void 0 === i.mark && (i.mark = !1), void 0 === i.emoji && (i.emoji = !1), void 0 === i.fencedCodeBlockHighlighting && (i.fencedCodeBlockHighlighting = !0), void 0 === i.xml && (i.xml = !0), void 0 === i.tokenTypeOverrides && (i.tokenTypeOverrides = {});
+		var x, S = {
+			header: "header",
+			code: "comment",
+			quote: "quote",
+			list1: "variable-2",
+			list2: "keyword",
+			list3: "keyword",
+			hr: "hr",
+			image: "image",
+			imageAltText: "image-alt-text",
+			imageMarker: "image-marker",
+			formatting: "formatting",
+			linkInline: "link",
+			linkEmail: "link",
+			linkText: "link",
+			linkHref: "string",
+			em: "em",
+			strong: "strong",
+			strikethrough: "strikethrough",
+			mark: "mark",
+			emoji: "builtin"
+		};
+		for (x in S) S.hasOwnProperty(x) && i.tokenTypeOverrides[x] && (S[x] = i.tokenTypeOverrides[x]);
+		var v = /^([*\-_])(?:\s*\1){2,}\s*$/,
+			L = /^(?:[*\-+]|^[0-9]+([.)]))\s+/,
+			T = /^\[(x| )\](?=\s)/i,
+			q = i.allowAtxHeaderWithoutSpace ? /^(#+)/ : /^(#+)(?: |$)/,
+			M = /^ *(?:={1,}|-{1,})\s*$/,
+			F = /^[^#!\[\]*_\\<=>` "'(~:]+/,
+			b = /^(~~~+|```+)[ \t]*([\w+#-]*)[^\n`]*$/,
+			E = /^\s*\[[^\]]+?\]:.*$/,
+			w = /[!"#$%&'()*+,\-\.\/:;<=>?@\[\\\]^_`{|}~\u2014]/,
+			y = /^\[TOC[1-6]?\]\s*$/,
+			j = /^!!!/,
+			C = {
+				")": /^(?:[^\\\(\)]|\\.|\((?:[^\\\(\)]|\\.)*\))*?(?=\))/,
+				"]": /^(?:[^\\\[\]]|\\.|\[(?:[^\\\[\]]|\\.)*\])*?(?=\])/
+			},
+			H = {
+				startState: function() {
+					return {
+						f: a,
+						prevLine: {
+							stream: null
+						},
+						thisLine: {
+							stream: null
+						},
+						block: a,
+						htmlState: null,
+						indentation: 0,
+						inline: m,
+						text: g,
+						formatting: !1,
+						linkText: !1,
+						linkHref: !1,
+						linkTitle: !1,
+						code: 0,
+						em: !1,
+						strong: !1,
+						header: 0,
+						setext: 0,
+						hr: !1,
+						taskList: !1,
+						list: !1,
+						listStack: [],
+						quote: 0,
+						trailingSpace: 0,
+						trailingSpaceNewLine: !1,
+						strikethrough: !1,
+						mark: !1,
+						emoji: !1,
+						fencedEndRE: null
+					}
+				},
+				copyState: function(e) {
+					return {
+						f: e.f,
+						prevLine: e.prevLine,
+						thisLine: e.thisLine,
+						block: e.block,
+						htmlState: e.htmlState && t.copyState(k, e.htmlState),
+						indentation: e.indentation,
+						localMode: e.localMode,
+						localState: e.localMode ? t.copyState(e.localMode, e.localState) : null,
+						inline: e.inline,
+						text: e.text,
+						formatting: !1,
+						linkText: e.linkText,
+						linkTitle: e.linkTitle,
+						linkHref: e.linkHref,
+						code: e.code,
+						em: e.em,
+						strong: e.strong,
+						strikethrough: e.strikethrough,
+						mark: e.mark,
+						emoji: e.emoji,
+						header: e.header,
+						setext: e.setext,
+						hr: e.hr,
+						taskList: e.taskList,
+						list: e.list,
+						listStack: e.listStack.slice(0),
+						quote: e.quote,
+						indentedCode: e.indentedCode,
+						trailingSpace: e.trailingSpace,
+						trailingSpaceNewLine: e.trailingSpaceNewLine,
+						md_inside: e.md_inside,
+						fencedEndRE: e.fencedEndRE
+					}
+				},
+				token: function(t, e) {
+					if (e.formatting = !1, t != e.thisLine.stream) {
+						if (e.header = 0, e.hr = !1, t.match(/^\s*$/, !0)) return r(e), null;
+						if (e.prevLine = e.thisLine, e.thisLine = {
+								stream: t
+							}, e.taskList = !1, e.trailingSpace = 0, e.trailingSpaceNewLine = !1, !e.localState && (e.f = e.block, e.f != o)) {
+							var i = t.match(/^\s*/, !0)[0].replace(/\t/g, "    ").length;
+							if (e.indentation = i, e.indentationDiff = null, 0 < i) return null
+						}
+					}
+					return e.f(t, e)
+				},
+				innerMode: function(t) {
+					return t.block == o ? {
+						state: t.htmlState,
+						mode: k
+					} : t.localState ? {
+						state: t.localState,
+						mode: t.localMode
+					} : {
+						state: t,
+						mode: H
+					}
+				},
+				indent: function(e, i, n) {
+					return e.block == o && k.indent ? k.indent(e.htmlState, i, n) : e.localState && e.localMode.indent ? e.localMode.indent(e.localState, i, n) : t.Pass
+				},
+				blankLine: r,
+				getType: h,
+				closeBrackets: "()[]{}''\"\"``",
+				fold: "markdown"
+			};
+		return H
+	}), "xml"), t.defineMIME("text/markdown", "markdown"), t.defineMIME("text/x-markdown", "markdown")
+}));
